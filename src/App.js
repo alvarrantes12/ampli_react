@@ -1,23 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useEffect} from "react";
+import List from "./components/List";
+import WithLoadingList from "./components/WithLoadingList";
+import { getFetch } from "./components/FetchMethods";
+import { Form } from "./components/Form";
 
 function App() {
+  const LoadingList = WithLoadingList(List);
+  const [appState, setAppState] = useState(false)
+  const [appContent, setAppContent] = useState(null);
+  const [refresh, setRefresh] = useState(true);
+
+  useEffect (() => {
+    if (refresh){
+      setAppState(true);
+      getFetch('animals').then(res => setAppContent(res))
+      setAppState(false)
+      setRefresh(false)
+    }
+  }, [appContent, appState, refresh])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{margin: "40px"}}>
+      <p></p>
+      <LoadingList isLoading={appState} animals={appContent}/>      
+      <Form setRefresh={setRefresh}/>
     </div>
   );
 }
